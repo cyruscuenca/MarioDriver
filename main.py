@@ -52,15 +52,16 @@ def placeLines(frame, params):
 def averageLines(frame, lines):
     left = []
     right = []
-    for line in lines:
-        x1, y1, x2, y2 = line.reshape(4)
-        parameters = np.polyfit((x1, x2), (y1, y2), 1)
-        slope = parameters[0]
-        intercept = parameters[1]
-        if slope < 0:
-            left.append((slope, intercept))
-        else:
-            right.append((slope, intercept))
+    if lines is not None:
+        for line in lines:
+            x1, y1, x2, y2 = line.reshape(4)
+            parameters = np.polyfit((x1, x2), (y1, y2), 1)
+            slope = parameters[0]
+            intercept = parameters[1]
+            if slope < 0:
+                left.append((slope, intercept))
+            else:
+                right.append((slope, intercept))
     leftAverage = np.average(left, axis=0)
     rightAverage = np.average(right, axis=0)
     leftLine = placeLines(frame, leftAverage)
@@ -70,7 +71,7 @@ def averageLines(frame, lines):
 
 def overlayFrame(frame, lines):
     overlay = np.zeros_like(frame)
-    if lines is not None:
+    if lines.any():
         for x1, y1, x2, y2 in lines:
             cv2.line(overlay, (x1, y1), (x2, y2), (255, 0, 0), 2)
     return overlay
